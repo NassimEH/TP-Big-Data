@@ -12,8 +12,11 @@ from pathlib import Path
 
 import pandas as pd
 
-DATA_DIR = Path(__file__).resolve().parent / "data"
-DB_PATH = Path(__file__).resolve().parent / "tp1_initial.db"
+# q1/ -> TP1/data (donnees partagees) ; base SQLite locale a q1/
+Q1_DIR = Path(__file__).resolve().parent
+TP1_DIR = Q1_DIR.parent
+DATA_DIR = TP1_DIR / "data"
+DB_PATH = Q1_DIR / "tp1_initial.db"
 
 # Schema source (fichiers bruts) - pas d'en-tete dans les .txt BDPM
 COLS = {

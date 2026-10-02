@@ -1,0 +1,61 @@
+TP1 - Question 2
+================
+Guide pour recreer le MCD dans Looping-MCD
+https://www.looping-mcd.fr/
+
+--------------------------------------------------------------------
+1) Installation
+--------------------------------------------------------------------
+- Telecharger Looping (zip 32/64 bits) depuis le site
+- Extraire et lancer l'executable Looping
+
+
+--------------------------------------------------------------------
+2) Nouveau projet
+--------------------------------------------------------------------
+- Fichier > Nouveau
+- Choisir un schema Entite / Association (MCD Merise)
+
+
+--------------------------------------------------------------------
+3) Creer les 6 entites (voir 02_mcd.txt)
+--------------------------------------------------------------------
+PATIENT, MEDICAMENT, PRESENTATION, SUBSTANCE, GROUPE, LABORATOIRE
+Pour chaque entite : ajouter les attributs listes, marquer la PK.
+
+
+--------------------------------------------------------------------
+4) Creer les 5 associations
+--------------------------------------------------------------------
+PRENDRE      : PATIENT (1,n) -- MEDICAMENT (0,n)
+               attributs : datePrise, posologie, duree
+
+DISPOSER     : MEDICAMENT (0,n) -- PRESENTATION (1,1)
+               (pas d'attribut)
+
+COMPOSER     : MEDICAMENT (0,n) -- SUBSTANCE (1,n)
+               attributs : dosage, refDosage, natureComposant,
+                           elementPharma, numeroLien
+
+APPARTENIR   : MEDICAMENT (0,n) -- GROUPE (1,n)
+               attributs : typeGenerique, numeroTri
+
+DETENIR      : LABORATOIRE (1,n) -- MEDICAMENT (1,n)
+               (pas d'attribut)
+
+
+--------------------------------------------------------------------
+5) Export / capture
+--------------------------------------------------------------------
+- Exporter ou faire une capture d'ecran du MCD
+- Conserver ce dossier q2/ comme preuve de retroconception
+- Le schema relationnel SQL correspondant sera fait en Question 3
+
+
+--------------------------------------------------------------------
+6) Fichiers de reference dans ce dossier
+--------------------------------------------------------------------
+01_retroconception.txt  -> analyse du schema cible
+02_mcd.txt              -> MCD detaille (a rendre)
+mcd.mmd                 -> diagramme Mermaid (apercu IDE / GitHub)
+q2_mcd_info.py          -> rappel des chemins du projet

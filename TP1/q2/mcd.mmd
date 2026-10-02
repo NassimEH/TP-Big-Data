@@ -1,0 +1,82 @@
+%%{init: {'theme': 'neutral'}}%%
+erDiagram
+    PATIENT ||--|{ PRENDRE : prend
+    MEDICAMENT ||--o{ PRENDRE : est_pris
+    MEDICAMENT ||--o{ DISPOSER : a
+    PRESENTATION ||--|| DISPOSER : appartient
+    MEDICAMENT ||--o{ COMPOSER : contient
+    SUBSTANCE ||--|{ COMPOSER : entre_dans
+    MEDICAMENT ||--o{ APPARTENIR : classe_dans
+    GROUPE ||--|{ APPARTENIR : regroupe
+    LABORATOIRE ||--|{ DETENIR : detient
+    MEDICAMENT ||--|{ DETENIR : est_detenu
+
+    PATIENT {
+        string idfPatient PK
+        string prenom
+        string nom
+        int age
+        string genre
+        string mail
+    }
+
+    MEDICAMENT {
+        string idfMedic PK
+        string denomination
+        string forme
+        string statutAMM
+        string dateAMM
+        string noautorisation
+    }
+
+    PRESENTATION {
+        string idfPresentation PK
+        string libelle
+        string statutADM
+        string dateCom
+        string tauxRembt
+        string prixMedic
+        string prixPublic
+    }
+
+    SUBSTANCE {
+        string idfSubstance PK
+        string denomination
+    }
+
+    GROUPE {
+        string idfGroupe PK
+        string libelle
+    }
+
+    LABORATOIRE {
+        string idfLabo PK
+        string nom
+    }
+
+    PRENDRE {
+        date datePrise
+        int posologie
+        int duree
+    }
+
+    COMPOSER {
+        string dosage
+        string refDosage
+        string natureComposant
+        string elementPharma
+        string numeroLien
+    }
+
+    APPARTENIR {
+        int typeGenerique
+        int numeroTri
+    }
+
+    DISPOSER {
+        string note "FK idfMedic cote Presentation"
+    }
+
+    DETENIR {
+        string note "table association Laboratoire-Medicament"
+    }

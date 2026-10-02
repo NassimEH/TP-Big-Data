@@ -1,0 +1,140 @@
+TP1 - Question 2
+================
+Modele Conceptuel de Donnees (MCD) - style Merise / Looping-MCD
+
+Convention cardinalites : (min,max) cote entite, lues depuis l'entite
+vers l'association.
+
+
+====================================================================
+A. ENTITES ET ATTRIBUTS
+====================================================================
+
+PATIENT
+  idfPatient   : identifiant (PK)     <- patient_id
+  prenom                              <- first_name
+  nom                                 <- last_name
+  age
+  genre                               <- gender
+  mail                                <- email
+
+MEDICAMENT
+  idfMedic     : identifiant (PK)     <- code CIS
+  denomination
+  forme                               <- forme pharmaceutique
+  statutAMM                           <- statut administratif AMM
+  dateAMM
+  noautorisation                      <- numero autorisation europeenne
+
+PRESENTATION
+  idfPresentation : identifiant (PK)  <- code CIP7
+  libelle
+  statutADM                           <- statut administratif presentation
+  dateCom                             <- date declaration commercialisation
+  tauxRembt
+  prixMedic
+  prixPublic
+
+SUBSTANCE
+  idfSubstance : identifiant (PK)     <- code substance
+  denomination                        <- denomination substance
+  (dosage et refDosage : voir association Composer)
+
+GROUPE
+  idfGroupe    : identifiant (PK)     <- id groupe generique
+  libelle                             <- libelle groupe
+
+LABORATOIRE
+  idfLabo      : identifiant (PK)     <- genere / normalise depuis titulaires
+  nom
+
+
+====================================================================
+B. ASSOCIATIONS (manquees dans le schema cible listé) + CARDINALITES
+====================================================================
+
+1) PRENDRE  (PATIENT  N -- N  MEDICAMENT)
+   Cardinalites :
+     PATIENT     (1,n)  ----< PRENDRE >----  (0,n)  MEDICAMENT
+     Lecture :
+       - un patient prend au moins 1 medicament (sujet Q4 : entre 1 et 10)
+       - un medicament peut n'etre pris par aucun patient (0,n)
+   Attributs portes par l'association :
+     datePrise      (entre 01/01/2025 et aujourd'hui)
+     posologie      (1..5)
+     duree          (1..30 jours)
+
+2) DISPOSER / AVOIR_PRESENTATION  (MEDICAMENT  1 -- N  PRESENTATION)
+   Cardinalites :
+     MEDICAMENT  (0,n)  ----< DISPOSER >----  (1,1)  PRESENTATION
+     Lecture :
+       - un medicament a 0 a n presentations (boites)
+       - une presentation appartient a exactement 1 medicament
+   Pas d'attribut porte (FK idfMedic suffira en relationnel)
+
+3) COMPOSER  (MEDICAMENT  N -- N  SUBSTANCE)
+   Cardinalites :
+     MEDICAMENT  (0,n)  ----< COMPOSER >----  (1,n)  SUBSTANCE
+     Lecture :
+       - un medicament a 0..n substances (quasi tous en ont au moins 1)
+       - une substance entre dans 1..n medicaments
+   Attributs portes :
+     dosage
+     refDosage
+     natureComposant   (SA / ST)          [issu de CIS_COMPO]
+     elementPharma     (element pharmaceutique)
+     numeroLien        (lien SA/ST)
+
+4) APPARTENIR  (MEDICAMENT  N -- N  GROUPE)
+   Cardinalites :
+     MEDICAMENT  (0,n)  ----< APPARTENIR >----  (1,n)  GROUPE
+     Lecture :
+       - un medicament peut n'appartenir a aucun groupe generique
+       - un groupe contient au moins 1 medicament
+   Attributs portes :
+     typeGenerique     (0=princeps, 1=generique, 2=complementarite, 4=substituable)
+     numeroTri
+
+5) DETENIR  (LABORATOIRE  N -- N  MEDICAMENT)
+   Cardinalites :
+     LABORATOIRE (1,n)  ----< DETENIR >----  (1,n)  MEDICAMENT
+     Lecture :
+       - un laboratoire detient au moins 1 medicament
+       - un medicament a au moins 1 titulaire (souvent 1, parfois plusieurs via ';')
+   Pas d'attribut porte obligatoire
+
+
+====================================================================
+C. SCHEMA RELATIONNEL DEDUIT DU MCD (aperçu pour Q3)
+====================================================================
+
+Patients(idfPatient, prenom, nom, age, genre, mail)
+Medicaments(idfMedic, denomination, forme, statutAMM, dateAMM, noautorisation)
+Presentations(idfPresentation, libelle, statutADM, dateCom, tauxRembt, prixMedic, prixPublic, #idfMedic)
+Substances(idfSubstance, denomination)
+Groupes(idfGroupe, libelle)
+Laboratoires(idfLabo, nom)
+
+Prendre(idfPatient, idfMedic, datePrise, posologie, duree)
+Composer(idfMedic, idfSubstance, dosage, refDosage, natureComposant, elementPharma, numeroLien)
+Appartenir(idfMedic, idfGroupe, typeGenerique, numeroTri)
+Detenir(idfLabo, idfMedic)
+
+(# = cle etrangere)
+
+
+====================================================================
+D. DIAGRAMME TEXTE (vue d'ensemble)
+====================================================================
+
+  [LABORATOIRE]--(1,n)--<DETENIR>--(1,n)--[MEDICAMENT]--(0,n)--<DISPOSER>--(1,1)--[PRESENTATION]
+                                              |
+                    +-------------------------+-------------------------+
+                    |                         |                         |
+              (0,n) |                   (0,n) |                   (0,n) |
+                    |                         |                         |
+               <COMPOSER>                <APPARTENIR>               <PRENDRE>
+                    |                         |                         |
+              (1,n) |                   (1,n) |                   (1,n) |
+                    |                         |                         |
+             [SUBSTANCE]                 [GROUPE]                  [PATIENT]
