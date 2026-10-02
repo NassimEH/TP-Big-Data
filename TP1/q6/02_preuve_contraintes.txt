@@ -1,0 +1,56 @@
+TP1 - Question 6 - Preuve des contraintes d'integrite
+============================================================
+Base : C:\Users\z0050wps\OneDrive - Siemens AG\Bureau\TP1 Big Data\TP1\q6\tp1_cible.db
+
+1) Cles primaires (PRAGMA table_info / pk)
+   - Medicaments: PK = (idfMedic)
+   - Patients: PK = (idfPatient)
+   - Presentations: PK = (idfPresentation)
+   - Substances: PK = (idfSubstance)
+   - Groupes: PK = (idfGroupe)
+   - Laboratoires: PK = (idfLabo)
+   - Prendre: PK = (idfPatient, idfMedic, datePrise)
+   - Composer: PK = (idfMedic, idfSubstance, numeroLien)
+   - Appartenir: PK = (idfMedic, idfGroupe)
+   - Detenir: PK = (idfLabo, idfMedic)
+
+2) Cles etrangeres (PRAGMA foreign_key_list)
+   - Presentations.idfMedic -> Medicaments(idfMedic)
+   - Prendre.idfMedic -> Medicaments(idfMedic)
+   - Prendre.idfPatient -> Patients(idfPatient)
+   - Composer.idfSubstance -> Substances(idfSubstance)
+   - Composer.idfMedic -> Medicaments(idfMedic)
+   - Appartenir.idfGroupe -> Groupes(idfGroupe)
+   - Appartenir.idfMedic -> Medicaments(idfMedic)
+   - Detenir.idfMedic -> Medicaments(idfMedic)
+   - Detenir.idfLabo -> Laboratoires(idfLabo)
+
+3) Contraintes de domaine (CHECK) - tests d'insertion refusee
+   - Patients.age hors domaine (150)
+       -> REFUSE OK (CHECK constraint failed: age IS NULL OR (age >= 0 AND age <= 120))
+   - Patients.genre invalide
+       -> REFUSE OK (CHECK constraint failed: genre IS NULL OR genre IN ('Male', 'Female', 'Other'))
+   - Prendre.posologie > 5
+       -> REFUSE OK (CHECK constraint failed: posologie BETWEEN 1 AND 5)
+   - Prendre.duree > 30
+       -> REFUSE OK (CHECK constraint failed: duree BETWEEN 1 AND 30)
+   - Prendre.datePrise < 2025-01-01
+       -> REFUSE OK (CHECK constraint failed: datePrise >= '2025-01-01')
+   - Appartenir.typeGenerique invalide (3)
+       -> REFUSE OK (CHECK constraint failed: typeGenerique IS NULL OR typeGenerique IN (0, 1, 2, 4))
+   - Presentations.prixMedic negatif
+       -> REFUSE OK (CHECK constraint failed: prixMedic IS NULL OR prixMedic >= 0)
+   - FK Presentations.idfMedic inexistant
+       -> REFUSE OK (FOREIGN KEY constraint failed)
+
+4) Effectifs apres migration (inchanges vs Q5)
+   - Medicaments: 15883
+   - Patients: 17498
+   - Presentations: 20921
+   - Substances: 3907
+   - Groupes: 1686
+   - Laboratoires: 666
+   - Prendre: 96890
+   - Composer: 32422
+   - Appartenir: 8254
+   - Detenir: 15883

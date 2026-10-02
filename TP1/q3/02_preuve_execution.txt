@@ -1,0 +1,56 @@
+TP1 - Question 3 - Preuve execution schema
+==================================================
+Base: TP1/q3/tp1_cible.db
+
+Tables creees:
+- Appartenir (4 colonnes)
+    colonnes: idfMedic, idfGroupe, typeGenerique, numeroTri
+    FK: idfGroupe -> Groupes(idfGroupe)
+    FK: idfMedic -> Medicaments(idfMedic)
+    nb lignes: 0
+
+- Composer (7 colonnes)
+    colonnes: idfMedic, idfSubstance, dosage, refDosage, natureComposant, elementPharma, numeroLien
+    FK: idfSubstance -> Substances(idfSubstance)
+    FK: idfMedic -> Medicaments(idfMedic)
+    nb lignes: 0
+
+- Detenir (2 colonnes)
+    colonnes: idfLabo, idfMedic
+    FK: idfMedic -> Medicaments(idfMedic)
+    FK: idfLabo -> Laboratoires(idfLabo)
+    nb lignes: 0
+
+- Groupes (2 colonnes)
+    colonnes: idfGroupe, libelle
+    nb lignes: 0
+
+- Laboratoires (2 colonnes)
+    colonnes: idfLabo, nom
+    nb lignes: 0
+
+- Medicaments (6 colonnes)
+    colonnes: idfMedic, denomination, forme, statutAMM, dateAMM, noautorisation
+    nb lignes: 0
+
+- Patients (6 colonnes)
+    colonnes: idfPatient, prenom, nom, age, genre, mail
+    nb lignes: 0
+
+- Prendre (5 colonnes)
+    colonnes: idfPatient, idfMedic, datePrise, posologie, duree
+    FK: idfMedic -> Medicaments(idfMedic)
+    FK: idfPatient -> Patients(idfPatient)
+    nb lignes: 0
+
+- Presentations (8 colonnes)
+    colonnes: idfPresentation, libelle, statutADM, dateCom, tauxRembt, prixMedic, prixPublic, idfMedic
+    FK: idfMedic -> Medicaments(idfMedic)
+    nb lignes: 0
+
+- Substances (2 colonnes)
+    colonnes: idfSubstance, denomination
+    nb lignes: 0
+
+Schema execute avec succes.
+Tables vides = normal : le chargement des donnees est la Question 4/5.

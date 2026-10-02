@@ -1,0 +1,136 @@
+TP1 - Etape 2 - Analyse des donnees apres integration
+======================================================================
+
+Outil : ydata_profiling (ProfileReport)
+Rapport HTML detaille : 03_profil_ydata.html
+Perimetre : jointure Patients x Prendre (echantillon) x Medicaments,
+plus profils descriptifs des tables sources integrees.
+
+Synthese
+----------------------------------------------------------------------
+Les donnees BDPM et healthcare ont ete integrees dans le schema cible
+(q6/tp1_cible.db) avec contraintes d'integrite. L'association Prendre
+a ete generee aleatoirement (1 a 10 medicaments par patient).
+
+Constats principaux :
+- Patients : ages entre 1 et 90, genres Male/Female/Other equilibres.
+- Presentations : nombreux prix manquants (non rembourses / non renseignes).
+- Composer : natureComposant principalement SA (substance active) et FT.
+- Appartenir : types generiques 0/1/2/4 conformes au referentiel BDPM.
+- Couverture incomplete : une partie des medicaments n'a pas de presentation
+  ou de groupe generique (coherent avec l'etude de coherence Q1).
+- Prendre : posologies 1-5 et durees 1-30 respectent les contraintes Q6.
+
+### Indicateurs SQL post-integration
+- Medicaments : 15,883
+- Presentations : 20,921
+- % medicaments avec presentation : 92.1%
+- % medicaments avec composition : 100.0%
+- % medicaments dans un groupe generique : 51.6%
+- Prix medicament moyen (presentations) : 48.15 EUR
+- Age moyen patients : 45.4
+- Nombre de prises generees : 96,890
+
+Details par table
+----------------------------------------------------------------------
+
+### Table / vue : Patients
+- Lignes : 17,498
+- Colonnes : 6
+- Valeurs manquantes : aucune
+- Stats numeriques :
+    - age: mean=45.43, std=25.99, min=1.00, max=90.00
+- Distribution genre (3 modalites) :
+    - Other: 5,886
+    - Female: 5,870
+    - Male: 5,742
+
+### Table / vue : Medicaments
+- Lignes : 15,883
+- Colonnes : 6
+- Valeurs manquantes : aucune
+- Stats numeriques :
+    - idfMedic: mean=64969209.27, std=2903471.25, min=60002283.00, max=69999429.00
+- Distribution statutAMM (5 modalites) :
+    - Autorisation active: 14,940
+    - Autorisation abrogée: 724
+    - Autorisation archivée: 205
+    - Autorisation retirée: 10
+    - Autorisation suspendue: 4
+
+### Table / vue : Presentations
+- Lignes : 20,921
+- Colonnes : 8
+- Valeurs manquantes :
+    - prixMedic: 7,747 (37.0%)
+    - prixPublic: 7,746 (37.0%)
+- Stats numeriques :
+    - prixMedic: mean=48.15, std=129.85, min=0.66, max=999.20
+    - prixPublic: mean=49.33, std=129.52, min=1.02, max=993.51
+    - idfMedic: mean=64996925.37, std=2892690.55, min=60002283.00, max=69999429.00
+- Distribution statutADM (2 modalites) :
+    - Présentation active: 20,830
+    - Présentation abrogée: 91
+- Distribution tauxRembt (10 modalites) :
+    - 65%: 9,127
+    - : 7,250
+    - 65 %: 1,770
+    - 100%: 874
+    - 30%: 861
+    - 100 %: 380
+    - 30 %: 286
+    - 15%: 259
+
+### Table / vue : Prendre
+- Lignes : 20,000
+- Colonnes : 5
+- Valeurs manquantes : aucune
+- Stats numeriques :
+    - idfMedic: mean=64953794.64, std=2900094.21, min=60002283.00, max=69999429.00
+    - posologie: mean=2.99, std=1.41, min=1.00, max=5.00
+    - duree: mean=15.50, std=8.69, min=1.00, max=30.00
+
+### Table / vue : Composer
+- Lignes : 15,000
+- Colonnes : 5
+- Valeurs manquantes : aucune
+- Stats numeriques :
+    - idfMedic: mean=64960605.59, std=2912267.22, min=60002283.00, max=69998996.00
+- Distribution natureComposant (2 modalites) :
+    - SA: 12,479
+    - FT: 2,521
+
+### Table / vue : Appartenir
+- Lignes : 8,254
+- Colonnes : 4
+- Valeurs manquantes : aucune
+- Stats numeriques :
+    - idfMedic: mean=65000332.63, std=2889179.68, min=60002283.00, max=69999429.00
+    - idfGroupe: mean=936.77, std=542.00, min=2.00, max=2028.00
+    - typeGenerique: mean=0.86, std=0.45, min=0.00, max=4.00
+    - numeroTri: mean=5.95, std=4.75, min=1.00, max=34.00
+
+### Table / vue : Vue_Prendre_Patients_Medicaments
+- Lignes : 20,000
+- Colonnes : 13
+- Valeurs manquantes : aucune
+- Stats numeriques :
+    - idfMedic: mean=64953794.64, std=2900094.21, min=60002283.00, max=69999429.00
+    - posologie: mean=2.99, std=1.41, min=1.00, max=5.00
+    - duree: mean=15.50, std=8.69, min=1.00, max=30.00
+    - age: mean=45.54, std=25.92, min=1.00, max=90.00
+- Distribution genre (3 modalites) :
+    - Other: 6,728
+    - Female: 6,688
+    - Male: 6,584
+- Distribution statutAMM (5 modalites) :
+    - Autorisation active: 18,825
+    - Autorisation abrogée: 880
+    - Autorisation archivée: 276
+    - Autorisation retirée: 13
+    - Autorisation suspendue: 6
+
+Conclusion : le jeu de donnees integre est exploitable pour des statistiques
+SQL (etape 2.1) et pour un profiling exploratoire. Les valeurs manquantes
+sur les prix et l'absence de certains liens CIS restent les principaux
+points de qualite a surveiller.

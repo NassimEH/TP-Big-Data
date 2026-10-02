@@ -1,0 +1,69 @@
+TP1 - Question 2
+================
+Retroconception du schema relationnel cible
+
+--------------------------------------------------------------------
+1) Schema relationnel cible fourni par le sujet
+--------------------------------------------------------------------
+
+Patients(idfPatient, prenom, nom, age, genre, mail)
+Medicaments(idfMedic, denomination, forme, statutAMM, dateAMM, noautorisation)
+Presentations(idfPresentation, libelle, statutADM, dateCom, tauxRembt, prixMedic, prixPublic)
+  - idfPresentation = codeCIP7 du fichier CIS_CIP_bdpm
+Substances(idfSubstance, denomination, dosage, refDosage)
+Groupes(idfGroupe, libelle)
+
+Le sujet precise aussi :
+- une relation Laboratoires (mentionnee dans l'enonce, absente du schema liste)
+- des associations a completer (ex. Medicaments <-> Patients)
+- pour Patients-Medicaments : attributs metier manquants a generer plus tard
+  (date_prise, posologie, duree)
+
+
+--------------------------------------------------------------------
+2) Hypotheses de retroconception (passage relations -> MCD)
+--------------------------------------------------------------------
+
+A. Cles primaires (soulignees dans le sujet) = identifiants d'entites
+   - idfPatient, idfMedic, idfPresentation, idfSubstance, idfGroupe
+   - on ajoute idfLabo pour Laboratoire
+
+B. Dependances fonctionnelles observees dans les fichiers sources
+   - codeCIP7 -> un seul code CIS          => Presentation depend de Medicament
+   - un CIS peut avoir N presentations     => association 1,N
+   - un CIS a N substances (CIS_COMPO)     => association N,N
+   - dosage / refDosage dependent du couple (medicament, substance)
+     => ces attributs appartiennent a l'ASSOCIATION Composer (pas a Substance seule)
+   - un CIS peut appartenir a un groupe generique (CIS_GENER)
+     avec type_generique / numero_tri      => association N,N portee
+   - titulaires dans CIS_bdpm (separateur ;) => entity Laboratoire + association N,N
+   - un patient prend plusieurs medicaments => association N,N portee
+
+C. Ecart schema sujet vs MCD "propre"
+   Le sujet place dosage et refDosage dans Substances(...).
+   En MCD normalise, on les place sur Composer.
+   Lors de la generation SQL (Q3), on pourra :
+   - soit suivre le sujet a la lettre (attributs dans Substances),
+   - soit (recommande) creer une table d'association Composer
+     (idfMedic, idfSubstance, dosage, refDosage, ...).
+
+
+--------------------------------------------------------------------
+3) Mapping fichiers sources -> entites cibles (aperçu)
+--------------------------------------------------------------------
+
+CIS_bdpm.txt        -> Medicament (+ Laboratoire via titulaires)
+CIS_CIP_bdpm.txt    -> Presentation (liee a Medicament via code_cis)
+CIS_COMPO_bdpm.txt  -> Substance + association Composer
+CIS_GENER_bdpm.txt  -> Groupe + association Appartenir
+healthcare_data.csv -> Patient (sous-ensemble des colonnes)
+(genere Q4)         -> association Prendre (Patient-Medicament)
+
+
+--------------------------------------------------------------------
+4) Conclusion
+--------------------------------------------------------------------
+
+Le schema cible du sujet est incomplet : il manque les relations
+d'association (et Laboratoire). Le MCD de 02_mcd.txt les ajoute
+avec cardinalites et attributs portes.

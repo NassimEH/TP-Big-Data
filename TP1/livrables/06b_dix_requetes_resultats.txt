@@ -1,0 +1,290 @@
+TP1 - Etape 2 - 10 requetes SQL et exemples de resultats
+======================================================================
+Base : C:\Users\z0050wps\OneDrive - Siemens AG\Bureau\TP1 Big Data\TP1\q6\tp1_cible.db
+Nombre de requetes : 10
+
+----------------------------------------------------------------------
+Q01 [GROUP BY] Nombre de presentations par medicament (top 15)
+----------------------------------------------------------------------
+SELECT m.idfMedic,
+       m.denomination,
+       COUNT(p.idfPresentation) AS nb_presentations
+FROM Medicaments m
+LEFT JOIN Presentations p ON p.idfMedic = m.idfMedic
+GROUP BY m.idfMedic, m.denomination
+ORDER BY nb_presentations DESC
+LIMIT 15;
+
+Resultat :
+ idfMedic                                                                             denomination  nb_presentations
+ 69200149                  ZOLGENSMA 2 x 10 000 000 000 000 du vecteur/mL, solution pour perfusion                37
+ 60744612                              CHLORURE DE SODIUM 0,9 % LAVOISIER, solution pour perfusion                34
+ 66313063                              CHLORURE DE SODIUM 0,9 % AGUETTANT, solution pour perfusion                28
+ 67656403        OXYGENE MEDICINAL AIR PRODUCTS MEDICAL 200 bar, gaz pour inhalation, en bouteille                28
+ 67208154    OXYGENE MEDICINAL AIR LIQUIDE SANTE FRANCE 200 bar, gaz pour inhalation, en bouteille                22
+ 64767583                                           GLUCOSE 5 % AGUETTANT, solution pour perfusion                21
+ 66613769                                      XENETIX 350 (350 mg d'Iode/mL), solution injectable                21
+ 63478704        EAU POUR PREPARATIONS INJECTABLES LAVOISIER, solution pour préparation injectable                20
+ 63121232                                           GLUCOSE 5 % LAVOISIER, solution pour perfusion                19
+ 68324489                                      XENETIX 300 (300 mg d'Iode/mL), solution injectable                19
+ 67846776                                             OMNIPAQUE 350 mg d'I/mL, solution injectable                18
+ 64314227            OXYGENE MEDICINAL LINDE HEALTHCARE 200 bar, gaz pour inhalation, en bouteille                17
+ 65106581                                             OMNIPAQUE 300 mg d'I/mL, solution injectable                17
+ 60567418                                             VISIPAQUE 320 mg d'I/mL, solution injectable                16
+ 64606174 OXYGENE MEDICINAL AIR LIQUIDE ANTILLES GUYANE 200 bar, gaz pour inhalation, en bouteille                16
+
+[15 ligne(s)]
+
+----------------------------------------------------------------------
+Q02 [GROUP BY] Nombre de medicaments par laboratoire (top 15)
+----------------------------------------------------------------------
+SELECT l.nom AS laboratoire,
+       COUNT(d.idfMedic) AS nb_medicaments
+FROM Laboratoires l
+JOIN Detenir d ON d.idfLabo = l.idfLabo
+GROUP BY l.idfLabo, l.nom
+ORDER BY nb_medicaments DESC
+LIMIT 15;
+
+Resultat :
+                        laboratoire  nb_medicaments
+                             BOIRON             868
+                           BIOGARAN             835
+                      VIATRIS SANTE             821
+                   ARROW GENERIQUES             781
+EG LABO - LABORATOIRES EUROGENERICS             682
+                             SANDOZ             573
+                     ZENTIVA FRANCE             556
+                         TEVA SANTE             521
+                            LEHNING             362
+                           CRISTERS             329
+                       ZYDUS FRANCE             283
+                             WELEDA             222
+                         EVOLUPHARM             214
+           ACCORD HEALTHCARE FRANCE             206
+          SANOFI WINTHROP INDUSTRIE             192
+
+[15 ligne(s)]
+
+----------------------------------------------------------------------
+Q03 [GROUP BY] Effectif patients par genre
+----------------------------------------------------------------------
+SELECT genre,
+       COUNT(*) AS nb_patients,
+       ROUND(AVG(age), 1) AS age_moyen,
+       MIN(age) AS age_min,
+       MAX(age) AS age_max
+FROM Patients
+GROUP BY genre
+ORDER BY nb_patients DESC;
+
+Resultat :
+ genre  nb_patients  age_moyen  age_min  age_max
+ Other         5886       45.8        1       90
+Female         5870       45.2        1       90
+  Male         5742       45.3        1       90
+
+[3 ligne(s)]
+
+----------------------------------------------------------------------
+Q04 [GROUP BY] Nombre de prises par patient (distribution)
+----------------------------------------------------------------------
+SELECT nb_prises, COUNT(*) AS nb_patients
+FROM (
+  SELECT idfPatient, COUNT(*) AS nb_prises
+  FROM Prendre
+  GROUP BY idfPatient
+)
+GROUP BY nb_prises
+ORDER BY nb_prises;
+
+Resultat :
+ nb_prises  nb_patients
+         1         1756
+         2         1733
+         3         1705
+         4         1737
+         5         1724
+         6         1687
+         7         1732
+         8         1838
+         9         1825
+        10         1761
+
+[10 ligne(s)]
+
+----------------------------------------------------------------------
+Q05 [GROUP BY] Top 15 substances les plus utilisees (nb medicaments)
+----------------------------------------------------------------------
+SELECT s.denomination AS substance,
+       COUNT(DISTINCT c.idfMedic) AS nb_medicaments,
+       COUNT(*) AS nb_lignes_compo
+FROM Substances s
+JOIN Composer c ON c.idfSubstance = s.idfSubstance
+GROUP BY s.idfSubstance, s.denomination
+ORDER BY nb_medicaments DESC
+LIMIT 15;
+
+Resultat :
+                         substance  nb_medicaments  nb_lignes_compo
+               HYDROCHLOROTHIAZIDE             280              280
+                       PARACÉTAMOL             221              224
+                        AMLODIPINE             166              166
+             BÉSILATE D'AMLODIPINE             166              166
+                     ATORVASTATINE             158              158
+                       PÉRINDOPRIL             151              151
+ATORVASTATINE CALCIQUE TRIHYDRATÉE             140              140
+                      AMOXICILLINE             136              136
+            FUMARATE DE BISOPROLOL             134              134
+                         ÉZÉTIMIBE             131              131
+                CHLORURE DE SODIUM             128              132
+                         VALSARTAN             124              124
+          AMOXICILLINE TRIHYDRATÉE             118              118
+                       PRÉGABALINE             118              118
+                  ÉTHINYLESTRADIOL             115              131
+
+[15 ligne(s)]
+
+----------------------------------------------------------------------
+Q06 [GROUP BY] Medicaments par type generique
+----------------------------------------------------------------------
+SELECT CASE typeGenerique
+         WHEN 0 THEN '0 - princeps'
+         WHEN 1 THEN '1 - generique'
+         WHEN 2 THEN '2 - complementarite posologique'
+         WHEN 4 THEN '4 - generique substituable'
+         ELSE 'autre/NULL'
+       END AS type_generique,
+       COUNT(*) AS nb_appartenances,
+       COUNT(DISTINCT idfMedic) AS nb_medicaments,
+       COUNT(DISTINCT idfGroupe) AS nb_groupes
+FROM Appartenir
+GROUP BY typeGenerique
+ORDER BY typeGenerique;
+
+Resultat :
+                 type_generique  nb_appartenances  nb_medicaments  nb_groupes
+                   0 - princeps              1360            1358        1310
+                  1 - generique              6819            6775        1330
+2 - complementarite posologique                23              23          14
+     4 - generique substituable                52              52          10
+
+[4 ligne(s)]
+
+----------------------------------------------------------------------
+Q07 [GROUP BY] Prix moyen des presentations par taux de remboursement (top)
+----------------------------------------------------------------------
+SELECT COALESCE(NULLIF(tauxRembt, ''), '(vide)') AS taux_remboursement,
+       COUNT(*) AS nb_presentations,
+       ROUND(AVG(prixMedic), 2) AS prix_medic_moyen,
+       ROUND(AVG(prixPublic), 2) AS prix_public_moyen
+FROM Presentations
+GROUP BY tauxRembt
+ORDER BY nb_presentations DESC
+LIMIT 15;
+
+Resultat :
+taux_remboursement  nb_presentations  prix_medic_moyen  prix_public_moyen
+               65%              9127             25.41              26.74
+            (vide)              7250               NaN                NaN
+              65 %              1770             58.95              60.15
+              100%               874            218.26             219.32
+               30%               861             32.05              33.12
+             100 %               380            366.81             362.89
+              30 %               286             76.10              77.18
+               15%               259              7.54               8.56
+              15 %               110             21.50              22.52
+               35%                 4              8.52              10.12
+
+[10 ligne(s)]
+
+----------------------------------------------------------------------
+Q08 Statistique globale : volumes et couverture
+----------------------------------------------------------------------
+SELECT
+  (SELECT COUNT(*) FROM Medicaments) AS nb_medicaments,
+  (SELECT COUNT(*) FROM Presentations) AS nb_presentations,
+  (SELECT COUNT(*) FROM Patients) AS nb_patients,
+  (SELECT COUNT(*) FROM Prendre) AS nb_prises,
+  (SELECT COUNT(*) FROM Substances) AS nb_substances,
+  (SELECT COUNT(*) FROM Groupes) AS nb_groupes,
+  (SELECT COUNT(*) FROM Laboratoires) AS nb_laboratoires,
+  (SELECT ROUND(AVG(nb), 2) FROM (
+      SELECT COUNT(*) AS nb FROM Prendre GROUP BY idfPatient
+  )) AS nb_moyen_prises_par_patient;
+
+Resultat :
+ nb_medicaments  nb_presentations  nb_patients  nb_prises  nb_substances  nb_groupes  nb_laboratoires  nb_moyen_prises_par_patient
+          15883             20921        17498      96890           3907        1686              666                         5.54
+
+[1 ligne(s)]
+
+----------------------------------------------------------------------
+Q09 Top 15 medicaments les plus prescrits (via Prendre)
+----------------------------------------------------------------------
+SELECT m.idfMedic,
+       m.denomination,
+       m.forme,
+       COUNT(*) AS nb_prises,
+       COUNT(DISTINCT pr.idfPatient) AS nb_patients_distincts,
+       ROUND(AVG(pr.posologie), 2) AS posologie_moyenne,
+       ROUND(AVG(pr.duree), 1) AS duree_moyenne
+FROM Prendre pr
+JOIN Medicaments m ON m.idfMedic = pr.idfMedic
+GROUP BY m.idfMedic, m.denomination, m.forme
+ORDER BY nb_prises DESC
+LIMIT 15;
+
+Resultat :
+ idfMedic                                                                               denomination                                                 forme  nb_prises  nb_patients_distincts  posologie_moyenne  duree_moyenne
+ 68928322       ALLIUM CEPA WELEDA, degré de dilution compris entre 2CH et 30CH ou entre 4DH et 60DH granules et  crème et  solution en gouttes en gouttes         20                     20               3.00           16.0
+ 65275357               PROTOXYDE D'AZOTE MEDICINAL MESSER FRANCE, gaz pour inhalation, en bouteille                                   gaz pour inhalation         17                     17               3.53           15.4
+ 66221750                                       FLUOXETINE ARROW 20 mg, comprimé dispersible sécable                          comprimé dispersible sécable         17                     17               2.94           12.9
+ 64822649                                         XEROQUEL LP 50 mg, comprimé à libération prolongée                       comprimé à libération prolongée         16                     16               2.88           17.3
+ 65125261                                                                 PIASCLEDINE 300 mg, gélule                                                gélule         16                     16               2.75           14.7
+ 66802129                                        RISPERIDONE SANDOZ 4 mg, comprimé pelliculé sécable                            comprimé pelliculé sécable         16                     16               2.94           18.5
+ 66973735                  MICROPAKINE L.P. 1 000 mg, granulés à libération prolongée en sachet-dose                       granulés à libération prolongée         16                     16               3.19           10.3
+ 68216702                                               RIVAROXABAN ACCORD 15 mg, comprimé pelliculé                                    comprimé pelliculé         16                     16               2.88           11.6
+ 68969066                                                         LAROXYL 40 mg/ml, solution buvable                           solution buvable en gouttes         16                     16               3.31           16.7
+ 69440226                                    CITALOPRAM TEVA SANTE 20 mg, comprimé pelliculé sécable                            comprimé pelliculé sécable         16                     16               3.38           12.7
+ 69847275                                           LANSOPRAZOLE BGR 15 mg, gélule gastro-résistante                            gélule gastro-résistant(e)         16                     16               3.06           13.1
+ 60890204 OXOMEMAZINE EG 0,33 mg/ml SANS SUCRE, solution buvable édulcorée à l'acésulfame potassique                                      solution buvable         15                     15               3.40           20.1
+ 61080146                                         LAMZEDE 10 mg, poudre pour solution pour perfusion                   poudre pour solution pour perfusion         15                     15               3.53           13.8
+ 61592762                                       BOCOUTURE 50 unités, poudre pour solution injectable                       poudre pour solution injectable         15                     15               2.67           17.2
+ 62348800                                                  CEFPODOXIME EG 100 mg, comprimé pelliculé                                    comprimé pelliculé         15                     15               3.13           15.3
+
+[15 ligne(s)]
+
+----------------------------------------------------------------------
+Q10 Statistiques d'age des patients ayant au moins une prise
+----------------------------------------------------------------------
+SELECT
+  CASE
+    WHEN age < 18 THEN '0-17'
+    WHEN age BETWEEN 18 AND 39 THEN '18-39'
+    WHEN age BETWEEN 40 AND 64 THEN '40-64'
+    ELSE '65+'
+  END AS tranche_age,
+  COUNT(DISTINCT p.idfPatient) AS nb_patients,
+  COUNT(pr.idfMedic) AS nb_prises,
+  ROUND(1.0 * COUNT(pr.idfMedic) / COUNT(DISTINCT p.idfPatient), 2) AS prises_par_patient,
+  ROUND(AVG(pr.posologie), 2) AS posologie_moyenne
+FROM Patients p
+JOIN Prendre pr ON pr.idfPatient = p.idfPatient
+GROUP BY
+  CASE
+    WHEN age < 18 THEN '0-17'
+    WHEN age BETWEEN 18 AND 39 THEN '18-39'
+    WHEN age BETWEEN 40 AND 64 THEN '40-64'
+    ELSE '65+'
+  END
+ORDER BY tranche_age;
+
+Resultat :
+tranche_age  nb_patients  nb_prises  prises_par_patient  posologie_moyenne
+       0-17         3331      18331                5.50               3.00
+      18-39         4262      23848                5.60               3.01
+      40-64         4784      26584                5.56               3.01
+        65+         5121      28127                5.49               3.00
+
+[4 ligne(s)]

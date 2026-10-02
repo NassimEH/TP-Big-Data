@@ -1,0 +1,186 @@
+TP1 - Question 4
+================
+Regles de correspondance (fichiers initiaux -> schema cible)
+et regles de chargement (SQL ou Python)
+
+
+--------------------------------------------------------------------
+A. RAPPEL DES SOURCES (schema initial)
+--------------------------------------------------------------------
+Fichier                 Separateur   Encodage    En-tete ?
+CIS_bdpm.txt            tab (\t)     latin-1     non
+CIS_CIP_bdpm.txt        tab (\t)     utf-8       non
+CIS_COMPO_bdpm.txt      tab (\t)     latin-1     non
+CIS_GENER_bdpm.txt      tab (\t)     latin-1     non
+healthcare_data.csv     virgule (,)  utf-8       oui
+  (le sujet annonce ';' : le fichier fourni utilise ',')
+
+Particularites :
+- attributs multivalues dans CIS_bdpm : voies_admin et titulaires separes par ';'
+- redondances CIS_COMPO / CIS_GENER : plusieurs lignes par CIS / groupe
+- prix CIP : virgule decimale francaise ("24,34") a convertir
+
+
+--------------------------------------------------------------------
+B. REGLES DE CORRESPONDANCE (mapping attributs)
+--------------------------------------------------------------------
+
+R1. CIS_bdpm.txt  ->  Medicaments
+------------------------------------------------
+code_cis                    -> idfMedic
+denomination                -> denomination
+forme                       -> forme
+statut_amm                  -> statutAMM
+date_amm                    -> dateAMM
+numero_autorisation_eu      -> noautorisation
+(non charges dans Medicaments : voies_admin, type_procedure,
+ etat_commercialisation, statut_bdm, titulaires, surveillance)
+
+
+R2. CIS_bdpm.txt (titulaires)  ->  Laboratoires + Detenir
+------------------------------------------------
+titulaires (chaine, eventuellement "A ; B")
+  1) split sur ';' + trim
+  2) dedoublonner les noms  -> Laboratoires(idfLabo, nom)
+                               idfLabo = entier auto / hash stable
+  3) pour chaque (code_cis, labo)  -> Detenir(idfLabo, idfMedic)
+
+
+R3. CIS_CIP_bdpm.txt  ->  Presentations
+------------------------------------------------
+code_cip7                   -> idfPresentation
+libelle                     -> libelle
+statut_admin                -> statutADM
+date_declaration_com        -> dateCom
+taux_remboursement          -> tauxRembt
+prix_medicament             -> prixMedic   (remplacer ',' par '.' ; vide -> NULL)
+prix_public                 -> prixPublic  (idem)
+code_cis                    -> idfMedic    (FK)
+(ignorer : cip13, agrement, honoraires, indications_remboursement)
+
+
+R4. CIS_COMPO_bdpm.txt  ->  Substances + Composer
+------------------------------------------------
+code_substance              -> Substances.idfSubstance
+denomination_substance      -> Substances.denomination
+  (dedoublonner par code_substance ; si conflits de nom, garder le 1er)
+
+code_cis                    -> Composer.idfMedic
+code_substance              -> Composer.idfSubstance
+dosage                      -> Composer.dosage
+reference_dosage            -> Composer.refDosage
+nature_composant            -> Composer.natureComposant
+element_pharmaceutique      -> Composer.elementPharma
+numero_lien                 -> Composer.numeroLien
+
+
+R5. CIS_GENER_bdpm.txt  ->  Groupes + Appartenir
+------------------------------------------------
+id_groupe                   -> Groupes.idfGroupe
+libelle_groupe              -> Groupes.libelle
+  (dedoublonner par id_groupe)
+
+code_cis                    -> Appartenir.idfMedic
+id_groupe                   -> Appartenir.idfGroupe
+type_generique              -> Appartenir.typeGenerique
+numero_tri                  -> Appartenir.numeroTri
+
+
+R6. healthcare_data.csv  ->  Patients
+------------------------------------------------
+patient_id                  -> idfPatient
+first_name                  -> prenom
+last_name                   -> nom
+age                         -> age
+gender                      -> genre
+email                       -> mail
+(ignorer : phone, department, diagnosis, treatment, dates, status, bill)
+
+
+R7. GENERATION (pas de fichier source)  ->  Prendre
+------------------------------------------------
+Pour chaque patient :
+  - tirer k uniforme dans [1, 10]
+  - choisir k medicaments distincts au hasard parmi Medicaments
+  - pour chaque couple (patient, medicament) :
+      datePrise  uniforme entre 2025-01-01 et aujourd'hui
+      posologie  uniforme dans [1, 5]
+      duree      uniforme dans [1, 30]
+
+
+--------------------------------------------------------------------
+C. REGLES DE CHARGEMENT (ordre + SQL ou Python)
+--------------------------------------------------------------------
+Ordre impose par les cles etrangeres :
+  1. Medicaments, Substances, Groupes, Laboratoires, Patients
+  2. Presentations, Composer, Appartenir, Detenir
+  3. Prendre (apres Medicaments + Patients)
+
++----+---------------------------+----------------------------------+----------+
+| #  | Regle de chargement       | Justification                    | Codage   |
++----+---------------------------+----------------------------------+----------+
+| C1 | Charger Medicaments       | Mapping 1 ligne -> 1 tuple ;     | Python*  |
+|    | depuis CIS_bdpm           | encodage latin-1, pas d'en-tete  | ou SQL** |
++----+---------------------------+----------------------------------+----------+
+| C2 | Extraire Laboratoires +   | Split multivalue ';' +           | Python   |
+|    | Detenir depuis titulaires | dedoublonnage + generation id    |          |
++----+---------------------------+----------------------------------+----------+
+| C3 | Charger Presentations     | Mapping direct + conversion      | Python   |
+|    | depuis CIS_CIP            | prix "24,34" -> 24.34 ; FK CIS   |          |
++----+---------------------------+----------------------------------+----------+
+| C4 | Charger Substances        | SELECT DISTINCT code/nom         | Python   |
+|    | (dedoublon COMPO)         | (ou SQL DISTINCT apres import    | ou SQL   |
+|    |                           | brut)                            |          |
++----+---------------------------+----------------------------------+----------+
+| C5 | Charger Composer          | Une ligne COMPO = une asso ;     | Python   |
+|    | depuis CIS_COMPO          | redondances conservees           | ou SQL   |
++----+---------------------------+----------------------------------+----------+
+| C6 | Charger Groupes           | DISTINCT id_groupe / libelle     | Python   |
+|    | depuis CIS_GENER          |                                  | ou SQL   |
++----+---------------------------+----------------------------------+----------+
+| C7 | Charger Appartenir        | Une ligne GENER = une asso       | Python   |
+|    | depuis CIS_GENER          |                                  | ou SQL   |
++----+---------------------------+----------------------------------+----------+
+| C8 | Charger Patients          | Mapping colonnes CSV ; separateur| Python   |
+|    | depuis healthcare         | ',' (pas ';')                    |          |
++----+---------------------------+----------------------------------+----------+
+| C9 | Generer Prendre           | Donnees absentes ; aleatoire     | Python   |
+|    | (1..10 medics / patient)  | selon consignes du sujet         |          |
++----+---------------------------+----------------------------------+----------+
+|C10 | Filtrer orphelins FK      | Ex: CIP dont CIS absent de       | SQL      |
+|    | avant insert Presentations| Medicaments (LEFT JOIN / NOT     | ou       |
+|    | / Composer / Appartenir   | EXISTS) ; ou ignore en Python    | Python   |
++----+---------------------------+----------------------------------+----------+
+
+*  Python recommande pour tout le pipeline (encodages + nettoyage + generation).
+** SQL possible si les fichiers sont d'abord importes "bruts" dans des tables
+   staging (comme q1/tp1_initial.db) puis INSERT...SELECT vers le schema cible.
+
+
+--------------------------------------------------------------------
+D. SYNTHESE : quand SQL suffit / quand Python est necessaire
+--------------------------------------------------------------------
+SQL seul (apres staging) :
+  - copies/projection simples (Medicaments, Patients si deja propres)
+  - DISTINCT pour Substances / Groupes
+  - INSERT...SELECT pour Composer, Appartenir, Presentations (si types OK)
+  - controles d'integrite / comptages
+
+Python indispensable :
+  - lecture multi-encodages / separateurs
+  - split des titulaires multivalues (Laboratoires / Detenir)
+  - conversion des prix (virgule -> point) et types
+  - generation aleatoire de Prendre (C9)
+  - orchestration complete du chargement (Q5)
+
+
+--------------------------------------------------------------------
+E. NOTES POUR LA Q5 (execution des regles)
+--------------------------------------------------------------------
+- Base cible : TP1/q3/tp1_cible.db (schema deja cree en Q3)
+- Source possible : fichiers data/ et/ou tables de TP1/q1/tp1_initial.db
+- Seed aleatoire conseillee (reproductibilite) pour Prendre
+- Apres chargement : COUNT(*) sur chaque relation (preuve Q5)
+
+Fichiers de ce dossier :
+  01_regles_correspondance_chargement.txt  (ce document)

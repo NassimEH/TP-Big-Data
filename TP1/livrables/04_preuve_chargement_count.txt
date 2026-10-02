@@ -1,0 +1,21 @@
+TP1 - Question 5 - Preuve de chargement (COUNT(*))
+=======================================================
+Base : C:\Users\z0050wps\OneDrive - Siemens AG\Bureau\TP1 Big Data\TP1\q5\tp1_cible.db
+Seed Prendre : 42
+
+SELECT COUNT(*) FROM Medicaments;  -->  15883
+SELECT COUNT(*) FROM Patients;  -->  17498
+SELECT COUNT(*) FROM Presentations;  -->  20921
+SELECT COUNT(*) FROM Substances;  -->  3907
+SELECT COUNT(*) FROM Groupes;  -->  1686
+SELECT COUNT(*) FROM Laboratoires;  -->  666
+SELECT COUNT(*) FROM Prendre;  -->  96890
+SELECT COUNT(*) FROM Composer;  -->  32422
+SELECT COUNT(*) FROM Appartenir;  -->  8254
+SELECT COUNT(*) FROM Detenir;  -->  15883
+
+Controles de coherence :
+- Presentations orphelines : 0
+- Prendre orphelins patient : 0
+- Prendre orphelins medic : 0
+- Patients sans medicament (doit etre 0) : 0
