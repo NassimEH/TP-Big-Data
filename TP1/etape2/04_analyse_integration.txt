@@ -29,7 +29,7 @@ Constats principaux :
 - % medicaments dans un groupe generique : 51.6%
 - Prix medicament moyen (presentations) : 48.15 EUR
 - Age moyen patients : 45.4
-- Nombre de prises generees : 96,890
+- Nombre de prises generees : 96,834
 
 Details par table
 ----------------------------------------------------------------------

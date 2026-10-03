@@ -202,7 +202,7 @@ def charger_sqlite(frames: dict[str, pd.DataFrame]) -> sqlite3.Connection:
         n = conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
         print(f"Table {table:<18} -> {n:,} lignes")
 
-    print(f"\nBase creee : {DB_PATH}")
+    print(f"\nBase creee : TP1/q1/{DB_PATH.name}")
     return conn
 
 
@@ -348,7 +348,7 @@ def main() -> None:
     conn.close()
     sep("FIN QUESTION 1")
     print("Ouvrir la base avec SQLiteStudio :")
-    print(f"  {DB_PATH}")
+    print(f"  TP1/q1/{DB_PATH.name}")
 
 
 if __name__ == "__main__":

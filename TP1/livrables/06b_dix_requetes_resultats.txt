@@ -1,6 +1,6 @@
 TP1 - Etape 2 - 10 requetes SQL et exemples de resultats
 ======================================================================
-Base : C:\Users\z0050wps\OneDrive - Siemens AG\Bureau\TP1 Big Data\TP1\q6\tp1_cible.db
+Base : TP1/q6/tp1_cible.db
 Nombre de requetes : 10
 
 ----------------------------------------------------------------------

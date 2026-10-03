@@ -201,12 +201,23 @@ def charger(conn: sqlite3.Connection, src: dict[str, pd.DataFrame]) -> None:
     print(f"Detenir         : {len(detenir):,}")
 
     # C4 Substances (avant Composer)
+    # dosage/refDosage figurent sur Substances (schema sujet) ; comme une
+    # substance peut avoir plusieurs dosages, on garde une valeur representative
+    # (1re occurrence) et le detail exact reste dans Composer.
     substances = (
-        compo[["code_substance", "denomination_substance"]]
+        compo[
+            [
+                "code_substance",
+                "denomination_substance",
+                "dosage",
+                "reference_dosage",
+            ]
+        ]
         .rename(
             columns={
                 "code_substance": "idfSubstance",
                 "denomination_substance": "denomination",
+                "reference_dosage": "refDosage",
             }
         )
         .drop_duplicates(subset=["idfSubstance"])
@@ -336,7 +347,7 @@ def preuve(conn: sqlite3.Connection) -> None:
     lines = [
         "TP1 - Question 5 - Preuve de chargement (COUNT(*))",
         "=" * 55,
-        f"Base : {DB_PATH.resolve()}",
+        f"Base : TP1/q5/{DB_PATH.name}",
         f"Seed Prendre : {SEED}",
         "",
     ]

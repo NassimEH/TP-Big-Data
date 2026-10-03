@@ -74,7 +74,7 @@ def profile_all(frames: dict[str, pd.DataFrame]) -> None:
 
     report = ProfileReport(
         merged,
-        title="TP1 Big Data - Analyse post-integration (Patients x Prendre x Medicaments)",
+        title="TP1 Big Data - Analyse apres integration (Patients x Prendre x Medicaments)",
         explorative=True,
         minimal=False,
         correlations={"auto": {"calculate": True}},

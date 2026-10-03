@@ -1,44 +1,45 @@
-TP1 Big Data - Dossier LIVRABLES
-================================
-Ce dossier regroupe tous les livrables demandes par le sujet.
-Base de donnees finale (hors copie ici, trop volumineuse) :
-  TP1/q6/tp1_cible.db
+﻿TP1 Big Data - Organisation du rendu
+====================================
 
-Correspondance sujet -> fichiers
---------------------------------
-1) Retroconception du schema cible (+ associations)
-   - 01_retroconception_schema_cible.txt
-   - 01b_mcd_detaille.txt
-   - 01c_mcd_looping.loo          (ouvrir avec Looping)
-   - 01d_mcd_capture.png
+Rapport final
+-------------
+- Rapport TP1 Big Data - Nassim EL HADDAD.pdf
+  (a la racine du depot et dans TP1/livrables/)
 
-2) Code SQL des tables du schema cible
-   - 02_schema_relationnel_cible.sql
-   - 02b_schema_avec_contraintes_integrite.sql  (version finalisee Q6)
+Donnees sources
+---------------
+TP1/data/
+  CIS_bdpm.txt, CIS_CIP_bdpm.txt, CIS_COMPO_bdpm.txt,
+  CIS_GENER_bdpm.txt, healthcare_data.csv
 
-3) Regles de correspondance + code des regles de chargement
-   - 03_regles_correspondance_et_chargement.txt
-   - 03b_code_chargement_python.py
+Etape 1 - Construction (par question)
+-------------------------------------
+TP1/q1/  Etude, chargement initial, coherence
+TP1/q2/  Retroconception + MCD (Looping)
+TP1/q3/  Schema SQL cible
+TP1/q4/  Regles de correspondance / chargement
+TP1/q5/  Chargement + preuve COUNT(*)
+TP1/q6/  Contraintes d'integrite (PK, FK, domaines)
 
-4) Preuve de chargement (COUNT(*))
-   - 04_preuve_chargement_count.txt
-   - 04b_count_preuve.sql
+Etape 2 - Exploitation
+----------------------
+TP1/etape2/
+  10 requetes SQL + resultats
+  Analyse ydata_profiling
 
-5) Code SQL contraintes d'integrite (PK, FK, domaines)
-   - 02b_schema_avec_contraintes_integrite.sql
-   - 05_preuve_contraintes_integrite.txt
+Livrables (copies regroupees pour le rendu)
+-------------------------------------------
+TP1/livrables/
+  01* retroconception / MCD
+  02* schemas SQL (+ contraintes)
+  03* regles + code de chargement
+  04* preuve COUNT(*)
+  05* preuve contraintes
+  06* 10 requetes + resultats
+  07* analyse apres integration (+ HTML ydata)
+  Rapport TP1 Big Data - Nassim EL HADDAD.pdf
 
-6) 10 requetes SQL + exemple de resultats
-   - 06_dix_requetes_stats.sql
-   - 06b_dix_requetes_resultats.txt
-   (dont 9 avec GROUP BY ; seule Q08 est globale sans GROUP BY)
-
-7) Analyse apres integration (ydata_profiling)
-   - 07_analyse_donnees_apres_integration.txt
-   - 07b_rapport_ydata_profiling.html
-
-Organisation du projet (travail par question)
---------------------------------------------
-TP1/q1 .. q6   : etape 1 (construction du jeu de donnees)
-TP1/etape2     : etape 2 (stats SQL + profiling)
-TP1/livrables  : copies pretes pour le rapport / rendu
+Sujet
+-----
+TP1/Sujet TP1 Big Data.pdf
+TP1/description_fichiers.pdf

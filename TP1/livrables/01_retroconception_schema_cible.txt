@@ -39,13 +39,13 @@ B. Dependances fonctionnelles observees dans les fichiers sources
    - titulaires dans CIS_bdpm (separateur ;) => entity Laboratoire + association N,N
    - un patient prend plusieurs medicaments => association N,N portee
 
-C. Ecart schema sujet vs MCD "propre"
-   Le sujet place dosage et refDosage dans Substances(...).
-   En MCD normalise, on les place sur Composer.
-   Lors de la generation SQL (Q3), on pourra :
-   - soit suivre le sujet a la lettre (attributs dans Substances),
-   - soit (recommande) creer une table d'association Composer
-     (idfMedic, idfSubstance, dosage, refDosage, ...).
+C. Alignement avec le sujet + completion
+   Le sujet place dosage et refDosage dans Substances(...): on les conserve
+   sur l'entite Substances.
+   Comme une meme substance peut avoir plusieurs dosages selon le medicament,
+   ces attributs sont AUSSI portes par l'association Composer (detail CIS_COMPO).
+   On ajoute Laboratoires + les associations manquantes (Prendre, Disposer,
+   Composer, Appartenir, Detenir).
 
 
 --------------------------------------------------------------------

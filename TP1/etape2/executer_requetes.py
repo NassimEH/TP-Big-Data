@@ -40,11 +40,11 @@ def main() -> None:
     lines = [
         "TP1 - Etape 2 - 10 requetes SQL et exemples de resultats",
         "=" * 70,
-        f"Base : {DB}",
+        f"Base : TP1/q6/{DB.name}",
         f"Nombre de requetes : {len(queries)}",
         "",
     ]
-    print(f"{len(queries)} requetes sur {DB}")
+    print(f"{len(queries)} requetes sur TP1/q6/{DB.name}")
     for title, q in queries:
         print(">", title)
         df = pd.read_sql_query(q, conn)

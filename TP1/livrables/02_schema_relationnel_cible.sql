@@ -60,7 +60,9 @@ CREATE TABLE Presentations (
 
 CREATE TABLE Substances (
   idfSubstance     TEXT         PRIMARY KEY,
-  denomination     TEXT         NOT NULL
+  denomination     TEXT         NOT NULL,
+  dosage           TEXT,          -- attribut du sujet ; valeur representative
+  refDosage        TEXT           -- detail par medicament : table Composer
 );
 
 CREATE TABLE Groupes (

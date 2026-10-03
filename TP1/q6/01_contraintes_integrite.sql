@@ -63,6 +63,8 @@ CREATE TABLE Presentations (
 CREATE TABLE Substances (
   idfSubstance     TEXT         PRIMARY KEY,
   denomination     TEXT         NOT NULL,
+  dosage           TEXT,
+  refDosage        TEXT,
   CHECK (length(trim(denomination)) > 0)
 );
 

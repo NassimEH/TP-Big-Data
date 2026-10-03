@@ -63,7 +63,7 @@ def prove(conn: sqlite3.Connection) -> None:
     lines: list[str] = []
     lines.append("TP1 - Question 6 - Preuve des contraintes d'integrite")
     lines.append("=" * 60)
-    lines.append(f"Base : {DST_DB.resolve()}")
+    lines.append(f"Base : TP1/q6/{DST_DB.name}")
     lines.append("")
 
     # PK / FK inventaire

@@ -63,11 +63,13 @@ R4. CIS_COMPO_bdpm.txt  ->  Substances + Composer
 ------------------------------------------------
 code_substance              -> Substances.idfSubstance
 denomination_substance      -> Substances.denomination
-  (dedoublonner par code_substance ; si conflits de nom, garder le 1er)
+dosage                      -> Substances.dosage      (1re occurrence / substance)
+reference_dosage            -> Substances.refDosage   (idem)
+  (dedoublonner par code_substance ; si conflits de nom/dosage, garder le 1er)
 
 code_cis                    -> Composer.idfMedic
 code_substance              -> Composer.idfSubstance
-dosage                      -> Composer.dosage
+dosage                      -> Composer.dosage          (detail par medicament)
 reference_dosage            -> Composer.refDosage
 nature_composant            -> Composer.natureComposant
 element_pharmaceutique      -> Composer.elementPharma

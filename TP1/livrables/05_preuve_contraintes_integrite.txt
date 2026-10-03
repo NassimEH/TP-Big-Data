@@ -1,6 +1,6 @@
 TP1 - Question 6 - Preuve des contraintes d'integrite
 ============================================================
-Base : C:\Users\z0050wps\OneDrive - Siemens AG\Bureau\TP1 Big Data\TP1\q6\tp1_cible.db
+Base : TP1/q6/tp1_cible.db
 
 1) Cles primaires (PRAGMA table_info / pk)
    - Medicaments: PK = (idfMedic)
@@ -50,7 +50,7 @@ Base : C:\Users\z0050wps\OneDrive - Siemens AG\Bureau\TP1 Big Data\TP1\q6\tp1_ci
    - Substances: 3907
    - Groupes: 1686
    - Laboratoires: 666
-   - Prendre: 96890
+   - Prendre: 96834
    - Composer: 32422
    - Appartenir: 8254
    - Detenir: 15883

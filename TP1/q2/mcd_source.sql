@@ -38,7 +38,9 @@ CREATE TABLE Presentations (
 
 CREATE TABLE Substances (
   idfSubstance VARCHAR(20) PRIMARY KEY,
-  denomination VARCHAR(255) NOT NULL
+  denomination VARCHAR(255) NOT NULL,
+  dosage VARCHAR(100),
+  refDosage VARCHAR(100)
 );
 
 CREATE TABLE Groupes (

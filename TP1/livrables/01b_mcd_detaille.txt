@@ -38,7 +38,10 @@ PRESENTATION
 SUBSTANCE
   idfSubstance : identifiant (PK)     <- code substance
   denomination                        <- denomination substance
-  (dosage et refDosage : voir association Composer)
+  dosage                              <- attribut du sujet (valeur representative)
+  refDosage                           <- attribut du sujet (valeur representative)
+  NB : le detail dosage/refDosage par medicament est aussi porte par Composer,
+       car une meme substance peut avoir plusieurs dosages selon le CIS.
 
 GROUPE
   idfGroupe    : identifiant (PK)     <- id groupe generique
@@ -50,7 +53,7 @@ LABORATOIRE
 
 
 ====================================================================
-B. ASSOCIATIONS (manquees dans le schema cible listé) + CARDINALITES
+B. ASSOCIATIONS (manquees dans le schema cible list) + CARDINALITES
 ====================================================================
 
 1) PRENDRE  (PATIENT  N -- N  MEDICAMENT)
@@ -105,13 +108,13 @@ B. ASSOCIATIONS (manquees dans le schema cible listé) + CARDINALITES
 
 
 ====================================================================
-C. SCHEMA RELATIONNEL DEDUIT DU MCD (aperçu pour Q3)
+C. SCHEMA RELATIONNEL DEDUIT DU MCD (aperu pour Q3)
 ====================================================================
 
 Patients(idfPatient, prenom, nom, age, genre, mail)
 Medicaments(idfMedic, denomination, forme, statutAMM, dateAMM, noautorisation)
 Presentations(idfPresentation, libelle, statutADM, dateCom, tauxRembt, prixMedic, prixPublic, #idfMedic)
-Substances(idfSubstance, denomination)
+Substances(idfSubstance, denomination, dosage, refDosage)
 Groupes(idfGroupe, libelle)
 Laboratoires(idfLabo, nom)
 
